@@ -106,6 +106,11 @@
   function openAccountSettings() {
     $("#authError").hidden = true;
     $("#authForm").reset();
+    const pwInput = $("#auth-password"), pwToggle = $("#toggleAuthPassword");
+    pwInput.type = "password";
+    pwToggle.setAttribute("aria-pressed", "false");
+    pwToggle.setAttribute("aria-label", "Show password");
+    pwToggle.textContent = "👁️";
     updateAuthUI();
     $("#accountModal").hidden = false;
   }
@@ -654,6 +659,15 @@
     $("#authForm").addEventListener("submit", submitAuthForm);
     $("#authSignOut").onclick = signOutCloud;
     $("#accountModal").addEventListener("click", (e) => { if (e.target.id === "accountModal") closeAccountSettings(); });
+    $("#toggleAuthPassword").onclick = () => {
+      const input = $("#auth-password");
+      const btn = $("#toggleAuthPassword");
+      const showing = input.type === "text";
+      input.type = showing ? "password" : "text";
+      btn.setAttribute("aria-pressed", String(!showing));
+      btn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+      btn.textContent = showing ? "👁️" : "🙈";
+    };
 
     renderFilters();
     renderGrid();

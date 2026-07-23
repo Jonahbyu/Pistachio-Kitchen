@@ -171,7 +171,10 @@
             </div>
             <div class="field">
               <label for="auth-password">Password</label>
-              <input id="auth-password" name="password" type="password" required autocomplete="current-password" />
+              <div class="password-field">
+                <input id="auth-password" name="password" type="password" required autocomplete="current-password" />
+                <button type="button" class="password-toggle" id="toggleAuthPassword" aria-label="Show password" aria-pressed="false">👁️</button>
+              </div>
             </div>
             <div class="modal-foot">
               <button type="submit" class="btn btn-primary" id="authSignIn">Sign In</button>
