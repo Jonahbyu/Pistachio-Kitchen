@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Pistachio Kitchen</title>
+  <meta name="description" content="A personal online cookbook — find, share, and print your favorite recipes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥗</text></svg>" />
+
+  <!-- ===== PWA / installability ===== -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#6ba04a" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Pistachio Kitchen" />
+</head>
+<body>
+  <!-- ===== Header ===== -->
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a href="#" class="brand" id="homeLink">
+        <span class="brand-mark">🌿</span>
+        <span class="brand-text">
+          <span class="brand-title">The Pistachio Kitchen</span>
+          <span class="brand-sub">a personal cookbook</span>
+        </span>
+      </a>
+      <div class="header-actions">
+        <label class="search">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input type="search" id="searchInput" placeholder="Search recipes…" aria-label="Search recipes" />
+        </label>
+        <span class="sync-status" id="syncStatus" hidden></span>
+        <button class="btn btn-primary" id="addRecipeBtn">+ Add Recipe</button>
+        <div class="menu">
+          <button class="btn btn-ghost" id="menuBtn" aria-haspopup="true" aria-expanded="false">⋯</button>
+          <div class="menu-list" id="menuList" hidden>
+            <button data-action="account">👤  Account / Sync…</button>
+            <button data-action="export">⬇️  Backup / Export</button>
+            <button data-action="import">⬆️  Import backup</button>
+            <button data-action="loadSamples">🌱  Load sample recipes</button>
+            <button data-action="clearAll" class="danger">🗑️  Remove all recipes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Filter bar ===== -->
+  <div class="filterbar" id="filterbar">
+    <div class="wrap filterbar-inner" id="tagFilters"></div>
+  </div>
+
+  <main class="wrap" id="app">
+    <!-- ===== Recipe grid (home) ===== -->
+    <section id="gridView">
+      <div class="grid-head">
+        <h1 id="gridTitle">All Recipes</h1>
+        <p class="grid-count" id="gridCount"></p>
+      </div>
+      <div class="recipe-grid" id="recipeGrid"></div>
+      <div class="empty-state" id="emptyState" hidden></div>
+    </section>
+
+    <!-- ===== Single recipe view ===== -->
+    <section id="recipeView" hidden></section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Made with 🌿 &nbsp;•&nbsp; Your recipes are saved right here in your browser.</p>
+    </div>
+  </footer>
+
+  <!-- ===== Recipe editor modal ===== -->
+  <div class="modal-backdrop" id="editorModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+      <div class="modal-head">
+        <h2 id="editorTitle">Add a Recipe</h2>
+        <button class="icon-btn" id="closeEditor" aria-label="Close">✕</button>
+      </div>
+      <form id="recipeForm" class="modal-body">
+        <div class="field">
+          <label for="f-title">Recipe name</label>
+          <input id="f-title" name="title" required placeholder="Grandma's Pistachio Cake" />
+        </div>
+
+        <div class="field">
+          <label for="f-source">Source / credit <span class="opt">(optional)</span></label>
+          <input id="f-source" name="source" placeholder="e.g. Madeleine Matthews" />
+        </div>
+
+        <div class="field">
+          <label for="f-desc">Short description <span class="opt">(optional)</span></label>
+          <textarea id="f-desc" name="description" rows="2" placeholder="A moist, nutty cake that's perfect for spring gatherings."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="f-image">Photo <span class="opt">(optional)</span></label>
+          <div class="image-picker">
+            <input id="f-image" name="image" type="file" accept="image/*" />
+            <div class="image-preview" id="imagePreview" hidden><img id="imagePreviewImg" alt="Preview" /></div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="f-prep">Prep time</label>
+            <input id="f-prep" name="prepTime" placeholder="15 min" />
+          </div>
+          <div class="field">
+            <label for="f-cook">Cook time</label>
+            <input id="f-cook" name="cookTime" placeholder="30 min" />
+          </div>
+          <div class="field">
+            <label for="f-servings">Servings</label>
+            <input id="f-servings" name="servings" placeholder="8" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-tags">Tags <span class="opt">(comma separated — e.g. Dessert, Vegetarian)</span></label>
+          <input id="f-tags" name="tags" placeholder="Dessert, Baking, Family Favorite" />
+        </div>
+
+        <div class="field">
+          <label for="f-ingredients">Ingredients <span class="opt">(one per line)</span></label>
+          <textarea id="f-ingredients" name="ingredients" rows="7" placeholder="2 cups flour&#10;1 cup shelled pistachios&#10;3 eggs&#10;1 tsp vanilla"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="f-steps">Steps <span class="opt">(one step per line)</span></label>
+          <textarea id="f-steps" name="steps" rows="8" placeholder="Preheat oven to 350°F.&#10;Blitz pistachios into a fine meal.&#10;Cream butter and sugar…"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="f-notes">Notes <span class="opt">(optional)</span></label>
+          <textarea id="f-notes" name="notes" rows="2" placeholder="Store covered for up to 4 days. Freezes well."></textarea>
+        </div>
+
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="cancelEditor">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveRecipe">Save Recipe</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Account / cloud sync modal ===== -->
+  <div class="modal-backdrop" id="accountModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle">
+      <div class="modal-head">
+        <h2 id="accountModalTitle">Account</h2>
+        <button class="icon-btn" id="closeAccountModal" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="authSignedOut">
+          <p style="margin-top:0;color:var(--ink-soft);font-size:14px;">
+            Sign in so recipes stay synced between devices.
+          </p>
+          <p class="auth-error" id="authError" hidden></p>
+          <form id="authForm">
+            <div class="field">
+              <label for="auth-email">Email</label>
+              <input id="auth-email" name="email" type="email" required autocomplete="username" />
+            </div>
+            <div class="field">
+              <label for="auth-password">Password</label>
+              <input id="auth-password" name="password" type="password" required autocomplete="current-password" />
+            </div>
+            <div class="modal-foot">
+              <button type="submit" class="btn btn-primary" id="authSignIn">Sign In</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="authSignedIn" hidden>
+          <p style="margin-top:0;">Signed in as <strong id="authEmail"></strong></p>
+          <p style="color:var(--ink-soft);font-size:14px;">Recipes are syncing across every device you sign into.</p>
+          <div class="modal-foot">
+            <button type="button" class="btn btn-ghost" id="authSignOut">Sign Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- hidden file input for import -->
+  <input type="file" id="importFile" accept="application/json,.json" hidden />
+
+  <!-- toast -->
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- ===== Cloud sync (Firebase) ===== -->
+  <!-- firebase-config.js defines window.FIREBASE_CONFIG. If that file is missing
+       or the config is empty, the app just runs local-only (no crash). -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch((err) => {
+          console.warn("Service worker registration failed:", err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
