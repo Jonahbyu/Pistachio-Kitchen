@@ -1,4 +1,4 @@
-const CACHE = "pistachio-kitchen-v3";
+const CACHE = "pistachio-kitchen-v4";
 
 const APP_SHELL = [
   "./",
